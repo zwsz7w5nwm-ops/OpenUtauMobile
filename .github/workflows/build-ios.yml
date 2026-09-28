@@ -32,10 +32,9 @@ jobs:
         run: dotnet restore OpenUtauMobile/OpenUtauMobile.csproj
 
       - name: Publish iOS (arm64, Debug)
-        # 终极兜底：环境变量 + 关闭warnaserror + 禁用分析器 + 大范围屏蔽警告
         env:
           TreatWarningsAsErrors: 'false'
-        run: dotnet publish OpenUtauMobile/OpenUtauMobile.csproj -f net9.0-ios -c Debug -r ios-arm64 -warnaserror- -p:RunAnalyzers=false -p:TreatWarningsAsErrors=false -p:CodeAnalysisTreatWarningsAsErrors=false -p:NoWarn=8600-8699;CA1400-CA9999;NU1504;NETSDK1202
+        run: dotnet publish OpenUtauMobile/OpenUtauMobile.csproj -f net9.0-ios -c Debug -r ios-arm64 -p:RunAnalyzers=false -p:TreatWarningsAsErrors=false -p:CodeAnalysisTreatWarningsAsErrors=false -p:NoWarn=8600-8699;CA1400-CA9999;NU1504;NETSDK1202
 
       - name: Upload IPA
         uses: actions/upload-artifact@v4
