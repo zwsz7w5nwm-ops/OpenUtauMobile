@@ -1,0 +1,38 @@
+name: Build iOS IPA
+
+run-name: "iOS Build #${{ github.run_number }} · ${{ github.ref_name }}"
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-ios:
+    name: Build iOS (Debug)
+    runs-on: macos-15
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 9
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Install MAUI iOS workload
+        run: dotnet workload install maui-ios
+
+      - name: Restore dependencies
+        run: dotnet restore OpenUtauMobile/OpenUtauMobile.csproj
+
+      - name: Publish iOS (arm64, Debug)
+        run: dotnet publish OpenUtauMobile/OpenUtauMobile.csproj -f net9.0-ios -c Debug -r ios-arm64
+
+      - name: Upload IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: OpenUtauMobile-ios-ipa
+          path: "**/*.ipa"
