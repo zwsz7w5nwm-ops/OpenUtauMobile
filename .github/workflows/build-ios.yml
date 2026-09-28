@@ -22,11 +22,9 @@ jobs:
         with:
           dotnet-version: '9.0.x'
 
-      # 【关键修复】安装完整的 MAUI 工作负载（包含 android 和 ios），解决 NETSDK1147 报错
       - name: Install MAUI workloads
         run: dotnet workload install maui
 
-      # 【关键修复】自动修复项目缺失的工作负载依赖
       - name: Restore workloads
         run: dotnet workload restore
 
@@ -34,7 +32,8 @@ jobs:
         run: dotnet restore OpenUtauMobile/OpenUtauMobile.csproj
 
       - name: Publish iOS (arm64, Debug)
-        run: dotnet publish OpenUtauMobile/OpenUtauMobile.csproj -f net9.0-ios -c Debug -r ios-arm64
+        # 关键修复：忽略 NETSDK1202 警告，并强制不将警告视为错误
+        run: dotnet publish OpenUtauMobile/OpenUtauMobile.csproj -f net9.0-ios -c Debug -r ios-arm64 -p:TreatWarningsAsErrors=false -p:NoWarn=NETSDK1202
 
       - name: Upload IPA
         uses: actions/upload-artifact@v4
