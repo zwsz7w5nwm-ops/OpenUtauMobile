@@ -22,8 +22,13 @@ jobs:
         with:
           dotnet-version: '9.0.x'
 
-      - name: Install MAUI iOS workload
-        run: dotnet workload install maui-ios
+      # 【关键修复】安装完整的 MAUI 工作负载（包含 android 和 ios），解决 NETSDK1147 报错
+      - name: Install MAUI workloads
+        run: dotnet workload install maui
+
+      # 【关键修复】自动修复项目缺失的工作负载依赖
+      - name: Restore workloads
+        run: dotnet workload restore
 
       - name: Restore dependencies
         run: dotnet restore OpenUtauMobile/OpenUtauMobile.csproj
