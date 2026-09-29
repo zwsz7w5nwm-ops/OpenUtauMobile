@@ -23,18 +23,15 @@ jobs:
           dotnet-version: '9.0.x'
 
       - name: Install MAUI workloads
-        run: dotnet workload install maui
+        run: dotnet workload install maui-ios
 
-      - name: Restore workloads
-        run: dotnet workload restore
+      - name: Restore dependencies (iOS only)
+        run: dotnet restore -p:TargetFramework=net9.0-ios
 
-      - name: Restore dependencies
-        run: dotnet restore OpenUtauMobile/OpenUtauMobile.csproj
-
-      - name: Publish iOS (arm64, Debug)
+      - name: Build the IPA package
         env:
           TreatWarningsAsErrors: 'false'
-        run: dotnet publish OpenUtauMobile/OpenUtauMobile.csproj -f net9.0-ios -c Debug -r ios-arm64 -p:RunAnalyzers=false -p:TreatWarningsAsErrors=false -p:CodeAnalysisTreatWarningsAsErrors=false -p:NoWarn=8600-8699;CA1400-CA9999;NU1504;NETSDK1202
+        run: dotnet publish OpenUtauMobile/OpenUtauMobile.csproj -f net9.0-ios -c Debug -p:ArchiveOnBuild=true -p:RuntimeIdentifier=ios-arm64 -p:TargetFrameworks=net9.0-ios -p:RunAnalyzers=false -p:TreatWarningsAsErrors=false -p:CodeAnalysisTreatWarningsAsErrors=false -p:Nullable=disable -p:NoWarn=CS8600;CS8601;CS8602;CS8603;CS8618;CS8625;CA1400-CA9999;NU1504;NETSDK1202 -p:WarningLevel=0
 
       - name: Upload IPA
         uses: actions/upload-artifact@v4
