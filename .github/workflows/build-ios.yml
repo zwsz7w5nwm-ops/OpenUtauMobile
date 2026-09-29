@@ -25,6 +25,12 @@ jobs:
       - name: Install MAUI workloads
         run: dotnet workload install maui-ios
 
+      - name: Select Xcode 26.5
+        run: sudo xcode-select -s /Applications/Xcode_26.5.app/Contents/Developer
+
+      - name: Verify Xcode version
+        run: xcodebuild -version
+
       - name: Restore dependencies (iOS only)
         run: dotnet restore -p:TargetFramework=net9.0-ios -p:NuGetAudit=false -p:NoWarn='"NU1901,NU1902,NU1903,NU1904"' -p:WarningLevel=0
 
