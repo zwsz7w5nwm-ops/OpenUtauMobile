@@ -34,11 +34,19 @@ jobs:
       - name: Restore dependencies (iOS only)
         run: dotnet restore -p:TargetFramework=net9.0-ios -p:NuGetAudit=false -p:NoWarn='"NU1901,NU1902,NU1903,NU1904"' -p:WarningLevel=0
 
-      - name: Build the IPA package
-        run: dotnet publish OpenUtauMobile/OpenUtauMobile.csproj -f net9.0-ios -c Debug -p:ArchiveOnBuild=true -p:RuntimeIdentifier=ios-arm64 -p:TargetFrameworks=net9.0-ios -p:NuGetAudit=false -p:RunAnalyzers=false -p:TreatWarningsAsErrors=false -p:CodeAnalysisTreatWarningsAsErrors=false -p:Nullable=disable -p:NoWarn='"CS8600,CS8601,CS8602,CS8603,CS8618,CS8625,CS8632,CS0108,CA1400-CA9999,NU1504,NETSDK1202,NU1901,NU1902,NU1903,NU1904"' -p:WarningLevel=0 -p:WarningsNotAsErrors='"CS8600,CS8601,CS8602,CS8603,CS8618,CS8625,CS8632,CS0108,NU1901,NU1902,NU1903,NU1904"'
+      - name: Build .app bundle (unsigned)
+        run: dotnet publish OpenUtauMobile/OpenUtauMobile.csproj -f net9.0-ios -c Debug -p:RuntimeIdentifier=ios-arm64 -p:TargetFrameworks=net9.0-ios -p:RunAnalyzers=false -p:TreatWarningsAsErrors=false -p:CodeAnalysisTreatWarningsAsErrors=false -p:Nullable=disable -p:NoWarn='"CS8600,CS8601,CS8602,CS8603,CS8618,CS8625,CS8632,CS0108,CA1400-CA9999,NU1504,NETSDK1202,NU1901,NU1902,NU1903,NU1904"' -p:WarningLevel=0 -p:WarningsNotAsErrors='"CS8600,CS8601,CS8602,CS8603,CS8618,CS8625,CS8632,CS0108,NU1901,NU1902,NU1903,NU1904"' -p:EnableCodeSigning=false -p:CodesignKey="" -p:CodesignProvision="" -p:ProvisioningType=manual
+
+      - name: Create unsigned IPA
+        run: |
+          APP_PATH=$(find . -name "*.app" -print -quit)
+          echo "Found app at: $APP_PATH"
+          mkdir -p Payload
+          cp -R "$APP_PATH" Payload/
+          zip -r OpenUtauMobile-unsigned.ipa Payload/
 
       - name: Upload IPA
         uses: actions/upload-artifact@v4
         with:
           name: OpenUtauMobile-ios-ipa
-          path: "**/*.ipa"
+          path: OpenUtauMobile-unsigned.ipa
